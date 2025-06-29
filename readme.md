@@ -22,8 +22,8 @@ As of now it supports:
 
 Planned to support (besides the project chapter contents):
 * [x] output to file
-* [] help
-* [] Separate branch with state management using Rust Enums
+* [ ] help
+* [ ] Separate branch with state management using Rust Enums
 
 ### Example usage
 
