@@ -1,13 +1,19 @@
-use std::{fs, io::Write};
+use std::{env, fs, io::Write};
 
 pub enum Output {
     File(String),
     Cli,
 }
 
+pub enum Case {
+    Sensitive,
+    Insensitive,
+}
+
 pub struct Config {
     pub query: String,
     pub file_path: String,
+    pub case: Case,
     output: Output,
 }
 
@@ -17,15 +23,24 @@ impl Config {
             query,
             file_path,
             output: Output::Cli,
+            case: Case::Sensitive,
         }
     }
 
     pub fn build (args: Vec<String>) -> Result<Config,  &'static str> {
+        // Base Config constructor
         if args.len() < 3 {
             return Err("not enough arguments");
         }
         let mut config = Config::new(args[1].clone(), args[2].clone());
 
+        // Check env for case sensivity
+        let ignore_case = env::var("IGNORE_CASE").is_ok();
+        if ignore_case {
+            config.case = Case::Insensitive;
+        }
+
+        // File output
         if args.len() > 3 {
             for i in 2..args.len() - 1 {
                 if args[i].contains("-of") || args[i].contains("--output_file") {

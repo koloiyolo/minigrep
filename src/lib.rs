@@ -3,11 +3,15 @@ use std::error::Error;
 
 pub mod config;
 use config::Config;
+use config::Case;
 
 pub fn run (config: Config ) -> Result<(), Box<dyn Error>> {
     let file_contents = fs::read_to_string(&config.file_path)?;
 
-    let result = search(&config.query, &file_contents);
+    let result = match config.case {
+        Case::Sensitive => search(&config.query, &file_contents),
+        Case::Insensitive => search_case_insensitive(&config.query, &file_contents),
+    };
 
     config.output(result);
 
@@ -19,6 +23,18 @@ pub fn search<'a> (query: &str, contents: &'a str) -> Vec<&'a str> {
 
     for line in contents.lines() {
         if line.contains(query) || query == "_"{
+            results.push(line);
+        }
+    }
+    results
+    
+}
+
+pub fn search_case_insensitive<'a> (query: &str, contents: &'a str) -> Vec<&'a str> {
+    let mut results = Vec::new();
+
+    for line in contents.lines() {
+        if line.to_lowercase().contains(&query.to_lowercase()) || query == "_"{
             results.push(line);
         }
     }
@@ -78,5 +94,19 @@ Pick three.
 ductape";
 
         assert_eq!(Vec::<&str>::new(), search(query, contents));
+    }
+    #[test]
+    fn case_insensitive() {
+        let query = "rUsT";
+        let contents = "\
+Rust:
+safe, fast, productive.
+Pick three.
+Trust me.";
+
+        assert_eq!(
+            vec!["Rust:", "Trust me."],
+            search_case_insensitive(query, contents)
+        ); 
     }
 }

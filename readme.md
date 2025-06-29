@@ -4,14 +4,16 @@ This repository is CLI I/O Project, that was created based on Chapter 12 of *The
 
 The aim for this project is to showcase many valuable tricks and concepts of Rust that I learned by following the book, including:
 * Structs
+* Enums
 * Match statements
 * Borrow Checker fundamentals
 * Rust Error handling
 * Test Driven Development
+* Args and Environment Variables handling
 
 ## Project Overview
 This project is minimized `grep` tool implementation.
-It is used for 
+It is used to search file contents for specific phrases.
 
 As of now it supports:
 * passing file as argument
@@ -19,9 +21,9 @@ As of now it supports:
 * outputing whole file when passing `_` as query
 
 Planned to support (besides the project chapter contents):
-* output to file
-* help
-* Separate branch with state management using Rust Enums
+* [x] output to file
+* [] help
+* [] Separate branch with state management using Rust Enums
 
 ### Example usage
 
@@ -52,12 +54,19 @@ To an admiring bog!
 ```
 
 If You want to create output file:
-```
+```bash
 cargo run -- frog poem.txt -of output.txt
 ```
 or:
-```
+```bash
 cargo run -- frog poem.txt -output_file output.txt
 ```
 
-This will create file named `output.txt` that will contain query result
+If the operation is successfull this will create file named `output.txt` that will contain query result, and print them on the cli.
+
+### Case Sensitivity
+If you want your results to be case insensitive set `IGNORE_CASE` value to `1`
+```bash
+export IGNORE_CASE=1
+```
+If you want case sensivity back just set it to `0`
