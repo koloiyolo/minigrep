@@ -21,6 +21,7 @@ As of now it supports:
 Planned to support (besides the project chapter contents):
 * output to file
 * help
+* Separate branch with state management using Rust Enums
 
 ### Example usage
 
