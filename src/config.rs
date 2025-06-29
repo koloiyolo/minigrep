@@ -19,3 +19,23 @@ impl Config {
         Ok(Config::new(args[1].clone(), args[2].clone()))
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_build_method() {
+        let test_args = vec![
+            String::from("Test1"),
+            String::from("Test2"),
+            String::from("Test3"),
+            String::from("Test4"),
+        ];
+
+        let config = Config::build(test_args).unwrap();
+
+        assert_eq!(config.query, "Test2");
+        assert_eq!(config.file_path, "Test3")
+    }
+}

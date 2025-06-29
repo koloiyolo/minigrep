@@ -16,8 +16,9 @@ pub fn run (config: Config ) -> Result<(), Box<dyn Error>> {
 
 pub fn search<'a> (query: &str, contents: &'a str) -> Vec<&'a str> {
     let mut results = Vec::new();
+
     for line in contents.lines() {
-        if line.contains(query) {
+        if line.contains(query) || query == "_"{
             results.push(line);
         }
     }
@@ -39,5 +40,43 @@ safe, fast, productive.
 Pick three.";
 
         assert_eq!(vec!["safe, fast, productive."], search(query, contents));
+    }
+    #[test]
+    fn multiple_results() {
+        let query = "duct";
+        let contents = "\
+Rust:
+safe, fast, productive.
+Pick three.
+ductape";
+
+        assert_eq!(vec!["safe, fast, productive.", "ductape"], search(query, contents));
+    }
+
+    #[test]
+    fn catch_all() {
+        let query = "_";
+        let contents = "\
+Rust:
+safe, fast, productive.
+Pick three.
+ductape";
+
+        assert_eq!(vec![ "Rust:",
+                         "safe, fast, productive.", 
+                         "Pick three.",
+                         "ductape"
+                        ], search(query, contents));
+    }
+    #[test]
+    fn catch_none() {
+        let query = "sdasdasd";
+        let contents = "\
+Rust:
+safe, fast, productive.
+Pick three.
+ductape";
+
+        assert_eq!(Vec::<&str>::new(), search(query, contents));
     }
 }
