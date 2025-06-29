@@ -5,11 +5,11 @@ pub mod config;
 use config::Config;
 
 pub fn run (config: Config ) -> Result<(), Box<dyn Error>> {
-    let file_contents = fs::read_to_string(config.file_path)?;
+    let file_contents = fs::read_to_string(&config.file_path)?;
 
-    for line in search(&config.query, &file_contents) {
-        println!("{line}");
-    }
+    let result = search(&config.query, &file_contents);
+
+    config.output(result);
 
     Ok(())
 }

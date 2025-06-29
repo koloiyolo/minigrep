@@ -50,3 +50,14 @@ How public, like a frog
 To tell your name the livelong day
 To an admiring bog!
 ```
+
+If You want to create output file:
+```
+cargo run -- frog poem.txt -of output.txt
+```
+or:
+```
+cargo run -- frog poem.txt -output_file output.txt
+```
+
+This will create file named `output.txt` that will contain query result
