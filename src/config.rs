@@ -27,12 +27,26 @@ impl Config {
         }
     }
 
-    pub fn build (args: Vec<String>) -> Result<Config,  &'static str> {
-        // Base Config constructor
-        if args.len() < 3 {
-            return Err("not enough arguments");
-        }
-        let mut config = Config::new(args[1].clone(), args[2].clone());
+    pub fn build (
+            mut args: impl Iterator<Item = String>
+        ) -> Result<Config, String> {
+        
+        args.next();
+        
+        let query = match args.next() {
+            Some(arg) => arg,
+            None => return Err("Didn't get a query string".to_string()),
+        };
+
+        let file_path = match args.next() {
+            Some(arg) => arg,
+            None => return Err(("Didn't get a file_path string").to_string()),
+        };
+
+        let mut config = Config::new(
+            query,
+            file_path
+        );
 
         // Check env for case sensivity
         let ignore_case = env::var("IGNORE_CASE").is_ok();
@@ -41,15 +55,15 @@ impl Config {
         }
 
         // File output
-        if args.len() > 3 {
-            for i in 2..args.len() - 1 {
-                if args[i].contains("-of") || args[i].contains("--output_file") {
-                    config.output = Output::File(String::from(&args[i+1]));
-                }
+        if let Some(arg) = args.next() {
+            if arg == "-of".to_string() || arg == "--output_file"  {
+                if let Some(path) = args.next() {
+                    config.output = Output::File(path);
+                } 
             }
         }
 
-        Ok(config)
+        Result::Ok(config)
     }
 
     pub fn output(&self, content: Vec<&str>) {
@@ -89,7 +103,9 @@ mod tests {
             String::from("Test3"),
         ];
 
-        let config = Config::build(test_args).unwrap();
+        let config = Config::build(
+            test_args.into_iter()
+        ).unwrap();
 
         assert_eq!(config.query, "Test2");
         assert_eq!(config.file_path, "Test3");
@@ -104,8 +120,10 @@ mod tests {
             String::from("Test4"),
         ];
 
-        let config = Config::build(test_args).unwrap();
-
+        let config = Config::build(
+            test_args.into_iter()
+        ).unwrap();
+        
         assert_eq!(config.query, "Test2");
         assert_eq!(config.file_path, "Test3")
     }
@@ -119,7 +137,9 @@ mod tests {
             String::from("-of"),
         ];
 
-        let config = Config::build(test_args).unwrap();
+        let config = Config::build(
+            test_args.into_iter()
+        ).unwrap();
 
         assert_eq!(config.query, "Test2");
         assert_eq!(config.file_path, "Test3")
