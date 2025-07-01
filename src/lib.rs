@@ -1,11 +1,11 @@
-use std::fs;
 use std::error::Error;
+use std::fs;
 
 pub mod config;
-use config::Config;
 use config::Case;
+use config::Config;
 
-pub fn run (config: Config ) -> Result<(), Box<dyn Error>> {
+pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
     let file_contents = fs::read_to_string(&config.file_path)?;
 
     let result = match config.case {
@@ -18,8 +18,7 @@ pub fn run (config: Config ) -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-pub fn search<'a> (query: &str, contents: &'a str) -> Vec<&'a str> {
-
+pub fn search<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
     /* Before chapter 13.3 */
     // let mut results = Vec::new();
 
@@ -29,16 +28,14 @@ pub fn search<'a> (query: &str, contents: &'a str) -> Vec<&'a str> {
     //     }
     // }
     // results
-    
+
     contents
         .lines()
-        .filter(|line|
-            line.contains(query) || query == "_"
-        )
+        .filter(|line| line.contains(query) || query == "_")
         .collect()
 }
 
-pub fn search_case_insensitive<'a> (query: &str, contents: &'a str) -> Vec<&'a str> {
+pub fn search_case_insensitive<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
     // let mut results = Vec::new();
 
     // for line in contents.lines() {
@@ -47,17 +44,12 @@ pub fn search_case_insensitive<'a> (query: &str, contents: &'a str) -> Vec<&'a s
     //     }
     // }
     // results
+
     contents
         .lines()
-        .filter(
-            |line|
-            line.to_lowercase()
-            .contains(&query.to_lowercase())
-            || query == "_"
-        )
+        .filter(|line| line.to_lowercase().contains(&query.to_lowercase()) || query == "_")
         .collect()
 }
-
 
 #[cfg(test)]
 mod tests {
@@ -82,7 +74,10 @@ safe, fast, productive.
 Pick three.
 ductape";
 
-        assert_eq!(vec!["safe, fast, productive.", "ductape"], search(query, contents));
+        assert_eq!(
+            vec!["safe, fast, productive.", "ductape"],
+            search(query, contents)
+        );
     }
 
     #[test]
@@ -94,11 +89,10 @@ safe, fast, productive.
 Pick three.
 ductape";
 
-        assert_eq!(vec![ "Rust:",
-                         "safe, fast, productive.", 
-                         "Pick three.",
-                         "ductape"
-                        ], search(query, contents));
+        assert_eq!(
+            vec!["Rust:", "safe, fast, productive.", "Pick three.", "ductape"],
+            search(query, contents)
+        );
     }
     #[test]
     fn catch_none() {
@@ -123,6 +117,6 @@ Trust me.";
         assert_eq!(
             vec!["Rust:", "Trust me."],
             search_case_insensitive(query, contents)
-        ); 
+        );
     }
 }

@@ -27,12 +27,9 @@ impl Config {
         }
     }
 
-    pub fn build (
-            mut args: impl Iterator<Item = String>
-        ) -> Result<Config, String> {
-        
+    pub fn build(mut args: impl Iterator<Item = String>) -> Result<Config, String> {
         args.next();
-        
+
         let query = match args.next() {
             Some(arg) => arg,
             None => return Err("Didn't get a query string".to_string()),
@@ -43,10 +40,7 @@ impl Config {
             None => return Err(("Didn't get a file_path string").to_string()),
         };
 
-        let mut config = Config::new(
-            query,
-            file_path
-        );
+        let mut config = Config::new(query, file_path);
 
         // Check env for case sensivity
         let ignore_case = env::var("IGNORE_CASE").is_ok();
@@ -56,10 +50,10 @@ impl Config {
 
         // File output
         if let Some(arg) = args.next() {
-            if arg == "-of".to_string() || arg == "--output_file"  {
+            if arg == "-of".to_string() || arg == "--output_file" {
                 if let Some(path) = args.next() {
                     config.output = Output::File(path);
-                } 
+                }
             }
         }
 
@@ -72,21 +66,18 @@ impl Config {
                 for line in content {
                     println!("{line}");
                 }
-            },
-            Output::File(path) => {
-                match fs::File::create(path) {
-                    Ok(mut file) => {
-                        for line in content {
-                            if let Err(e) = writeln!(file, "{}", line) {
-                                eprintln!("Failed to write line: {e}");
-                            }
-                            println!("{line}");
+            }
+            Output::File(path) => match fs::File::create(path) {
+                Ok(mut file) => {
+                    for line in content {
+                        if let Err(e) = writeln!(file, "{}", line) {
+                            eprintln!("Failed to write line: {e}");
                         }
-                    },
-                    Err(e) => panic!("Failed to create file: {e}"),
+                        println!("{line}");
+                    }
                 }
+                Err(e) => panic!("Failed to create file: {e}"),
             },
-        
         }
     }
 }
@@ -103,9 +94,7 @@ mod tests {
             String::from("Test3"),
         ];
 
-        let config = Config::build(
-            test_args.into_iter()
-        ).unwrap();
+        let config = Config::build(test_args.into_iter()).unwrap();
 
         assert_eq!(config.query, "Test2");
         assert_eq!(config.file_path, "Test3");
@@ -120,10 +109,8 @@ mod tests {
             String::from("Test4"),
         ];
 
-        let config = Config::build(
-            test_args.into_iter()
-        ).unwrap();
-        
+        let config = Config::build(test_args.into_iter()).unwrap();
+
         assert_eq!(config.query, "Test2");
         assert_eq!(config.file_path, "Test3")
     }
@@ -137,9 +124,7 @@ mod tests {
             String::from("-of"),
         ];
 
-        let config = Config::build(
-            test_args.into_iter()
-        ).unwrap();
+        let config = Config::build(test_args.into_iter()).unwrap();
 
         assert_eq!(config.query, "Test2");
         assert_eq!(config.file_path, "Test3")
